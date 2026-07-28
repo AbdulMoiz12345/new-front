@@ -45,12 +45,11 @@ export default function Signup() {
               <div className="name">CAITO<b>360</b></div>
             </div>
 
-            <div className="seg">
-              <Link href="/login">Sign in</Link>
-              <span className="on">Create account</span>
+            <div className="head">
+              <div className="kicker">Create account</div>
+              <h1>Create your workspace</h1>
+              <p>Get started in under 2 minutes</p>
             </div>
-
-            <div className="head"><h1>Create your workspace</h1><p>Get started in under 2 minutes</p></div>
 
             <div className="field">
               <label htmlFor="s-name">Full name</label>

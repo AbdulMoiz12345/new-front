@@ -29,12 +29,11 @@ export default function Login() {
               <div className="name">CAITO<b>360</b></div>
             </div>
 
-            <div className="seg">
-              <span className="on">Sign in</span>
-              <Link href="/signup">Create account</Link>
+            <div className="head">
+              <div className="kicker">Sign in</div>
+              <h1>Welcome back</h1>
+              <p>Sign in to your workspace</p>
             </div>
-
-            <div className="head"><h1>Welcome back</h1><p>Sign in to your workspace</p></div>
 
             <div className="field">
               <label htmlFor="l-email">Email</label>
