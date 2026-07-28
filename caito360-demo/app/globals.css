@@ -93,6 +93,8 @@ a { color: inherit; text-decoration: none; }
 .nav-item.active .ic { color: var(--accent-2); }
 .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); width: 3px; height: 20px; border-radius: 3px;
   background: linear-gradient(var(--accent-2), var(--accent-3)); box-shadow: 0 0 12px 1px var(--accent-glow); }
+.nav-item.inert { opacity: .45; cursor: default; }
+.nav-item.inert:hover { background: transparent; color: var(--sidebar-muted); }
 .nav-item .badge-count { margin-left: auto; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: rgba(var(--accent-rgb),.22); color: var(--accent-2); }
 .user-card { margin: 6px 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 0 1px var(--sidebar-border); overflow: hidden; z-index: 1; }
 .user-row { display: flex; align-items: center; gap: 10px; padding: 11px; }

@@ -4,31 +4,63 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Icon, BrandMark } from './icons'
 import { me } from '@/lib/mock'
 
-const workspace = [
+interface NavItem {
+  href?: string
+  icon: string
+  label: string
+  badge?: string
+}
+
+const workspace: NavItem[] = [
   { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
   { href: '/chat', icon: 'chat', label: 'Chat' },
   { href: '/documents', icon: 'file', label: 'Documents' },
   { href: '/insights', icon: 'bulb', label: 'Insights', badge: '2' },
 ]
-const manage = [
-  { href: '/dashboard', icon: 'help', label: 'Help' },
-  { href: '/team', icon: 'settings', label: 'Settings' },
+
+/**
+ * Manage rows. Only Team is part of this visual pass, so it is the only one with an
+ * `href`. The other three exist in the product (/help, /settings/profile,
+ * /settings/billing) but are not restyled yet — they render as inert rows so the nav
+ * keeps its real shape without pretending to navigate.
+ *
+ * Every href here MUST be unique across both lists: two rows sharing one path both
+ * matched the pathname and both lit up.
+ */
+const manage: NavItem[] = [
+  { icon: 'help', label: 'Help' },
+  { icon: 'settings', label: 'Settings' },
   { href: '/team', icon: 'team', label: 'Team' },
-  { href: '/dashboard', icon: 'plan', label: 'Plan' },
+  { icon: 'plan', label: 'Plan' },
 ]
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname()
   const router = useRouter()
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
-  const Row = (item: { href: string; icon: string; label: string; badge?: string }) => (
-    <Link href={item.href} className={`nav-item${isActive(item.href) ? ' active' : ''}`} onClick={onClose}>
-      <Icon name={item.icon} className="ic" />
-      <span>{item.label}</span>
-      {item.badge && <span className="badge-count">{item.badge}</span>}
-    </Link>
-  )
+  const Row = (item: NavItem) => {
+    const body = (
+      <>
+        <Icon name={item.icon} className="ic" />
+        <span>{item.label}</span>
+        {item.badge && <span className="badge-count">{item.badge}</span>}
+      </>
+    )
+    if (!item.href) {
+      return (
+        <span key={item.label} className="nav-item inert" title="Not part of this visual demo yet" aria-disabled="true">
+          {body}
+        </span>
+      )
+    }
+    const active = pathname === item.href || pathname.startsWith(item.href + '/')
+    return (
+      <Link key={item.label} href={item.href} className={`nav-item${active ? ' active' : ''}`}
+        aria-current={active ? 'page' : undefined} onClick={onClose}>
+        {body}
+      </Link>
+    )
+  }
 
   return (
     <>
@@ -44,9 +76,9 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
 
         <nav className="nav">
           <div className="nav-label">Workspace</div>
-          {workspace.map((i) => <Row key={i.label} {...i} />)}
+          {workspace.map(Row)}
           <div className="nav-label">Manage</div>
-          {manage.map((i) => <Row key={i.label} {...i} />)}
+          {manage.map(Row)}
         </nav>
 
         <div className="user-card">
