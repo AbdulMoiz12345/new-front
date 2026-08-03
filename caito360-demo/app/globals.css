@@ -3,72 +3,71 @@
 /* ============================================================================
    CAITO360 redesign demo — evolves the existing token system.
    ============================================================================ */
-/* ── LIGHT THEME · "paper & ink" ────────────────────────────────────────────────
-   The tying idea, and the reason this reads as a system rather than a set of nice
-   colours: THE NAVY RAIL AND THE BODY TEXT ARE THE SAME COLOUR. --ink is one hue used
-   at four lightnesses — the sidebar surface, the primary button, the heading, the
-   paragraph. Previously the rail was #0E2440 and the text was #10243B: close enough to
-   look like a mistake, far enough apart to be one. Deriving both from --ink means the
-   navy is not a decorative panel sitting next to the content, it is the product's ink
-   used as a surface. That is what resolves the warm-ground / cool-rail clash without
-   giving up the blue.
+/* ── LIGHT THEME · "paper & petrol" ─────────────────────────────────────────────
+   The previous light theme read as generated rather than designed, for four reasons
+   that are all fixable in tokens:
 
-   FOUR COLOURS, FOUR JOBS, no overlaps:
-     --ink      structure and permanence — rail, primary button, all text
-     --accent   live things only — active nav, links, focus, data marks, the send button
-     --clay     "new / just arrived", and nothing else
-     status     good / caution / problem
-   The previous version had teal doing both "brand" and "interactive", which is why it
-   still read slightly generic. One colour with two meanings is a colour the eye cannot
-   use.
+   1. The ground was blue-white (#FAFBFD) sitting under pure-white cards. A 1.5%
+      lightness step means no figure/ground at all — everything floats in a cold
+      white void, which is what "too plain" and "too white" describe. The ground is
+      now WARM paper (#F6F4F1, ~3.5% step under white), so a card is legibly a card
+      before any shadow is applied.
+   2. The accent was electric cyan (#0FB4C6). At 2.51:1 it could never be text, so
+      the UI leaned on gradients and glows to make it carry weight — which is the
+      cyan-to-violet signature of every AI template. It is now a deeper petrol teal
+      that is still the brand hue but can act as ink AND as a solid fill.
+   3. --accent-3 was violet #7C83FF. Teal + violet is the tell. Dropped: the palette
+      is now ONE cool hue (teal, on a navy ink) plus ONE warm note (clay), which is
+      a choice rather than a default.
+   4. Status colours were the stock Tailwind neons (#17B26A / #F59E0B / #EF4444).
+      Muted a step each so they read as a considered set on warm paper. Hue order is
+      preserved, so the severity ramp still means what it meant.
 
-   The ground is one step deeper than before (#F6F4F1 -> #F5F2ED) purely so white cards
-   have more to sit against — 1.098 -> 1.117 against white. Small number, visible result.
+   Cool ink on a warm ground is the deliberate tension holding this together — it is
+   why navy text on paper looks composed where navy on blue-white looks like a default.
 
-   CONTRAST: ratios are quoted as "on white · on paper · through two coats of tint",
-   the last being the case the production file documents as the decider (a muted label
-   on a status chip on a card carrying the same tint). Nothing here is under 4.5:1 as
-   text. Status FILLS are marks and tints only — never put a white label on --warning
-   (3.76:1) or --success (4.10:1); use the -fg ink on a -dim tint instead. */
+   CONTRAST: every value below was measured, including the case the production
+   globals.css calls out as the decider — a muted timestamp on a status chip that sits
+   on a card carrying the SAME 10% tint (two coats). Ratios in comments are
+   "on white · on paper · through two tints". Nothing here is under 4.5:1 as text. */
 :root, [data-theme="light"] {
-  --bg: #F5F2ED; --bg-2: #EDE8E0; --surface: #FFFFFF; --surface-2: #F3EFE9; --surface-3: #E6E0D6;
-  --border: #E5DFD5; --border-2: #D4CCC0; --row-hover: rgba(14,125,140,0.045);
-
-  /* One hue, four lightnesses. Changing --ink re-tones the rail, the buttons and the
-     type together, which is the point — they can no longer drift apart. */
-  --ink: #102943; --ink-2: #0B1D33; --ink-hover: #16344F;
-  --text-primary: #112A44;  /* 14.60 · 13.07 */
-  --text-secondary: #46566C; /* 7.48 · 6.70 */
-  --text-muted: #5B6470;     /* 6.00 · 5.37 · 4.59 */
-
+  --bg: #F6F4F1; --bg-2: #EFEBE5; --surface: #FFFFFF; --surface-2: #F4F1EC; --surface-3: #E7E2DA;
+  /* Warm hairlines, and two steps lower in contrast than the old cool ones. The old
+     #E8EEF4 against #FFFFFF was a hard cold line at every card edge, table row and
+     divider — the "too sharp" complaint. Elevation now comes mostly from the paper/white
+     step plus --shadow-sm; the border is only there to close the shape. */
+  --border: #E6E1D9; --border-2: #D5CEC4; --row-hover: rgba(14,125,140,0.045);
   --accent: #0E7D8C; --accent-hover: #0A6B78; --accent-2: #16C7D9; --accent-3: #4FD1DE;
   --accent-rgb: 14,125,140; --accent-dim: rgba(14,125,140,0.10); --accent-glow: rgba(14,125,140,0.18);
-  --accent-fg: #0A5F6B;      /* 7.34 · 6.57 · 5.15 */
-
-  --clay: #A9541F; --clay-rgb: 169,84,31; --clay-dim: rgba(169,84,31,0.10);
-  --clay-fg: #8F4617;        /* 6.87 · 6.15 · 4.78 — #9A4C1B measured 4.26 through two coats */
-  /* Lifted clay for use INSIDE the navy rail. A little warmth echoed into the cool
-     panel is what makes warm-plus-cool read as chosen rather than accidental; with no
-     warm anywhere in the rail, the two halves of the app merely coexist. 6.62:1 on --ink. */
-  --clay-on-ink: #E0A06A;
-
-  --success: #1B8F5A; --success-rgb: 27,143,90; --success-dim: rgba(27,143,90,0.10); --success-fg: #0F6B41; /* 6.56 · 5.88 · 4.69 */
-  --warning: #B4770B; --warning-rgb: 180,119,11; --warning-dim: rgba(180,119,11,0.11); --warning-fg: #7E5304; /* 6.72 · 6.02 · 4.91 */
-  --danger: #D2453D; --danger-rgb: 210,69,61; --danger-dim: rgba(210,69,61,0.10);
-  --danger-fg: #A6231E;      /* 7.29 · 6.53 · 5.09 — #B32B26 measured 4.45 through two coats */
-
-  /* Derived from --ink, not picked separately. */
-  --sidebar-bg: #102943; --sidebar-bg-2: #0B1D33;
+  --accent-fg: #0A5F6B;                /* 7.34 · 6.68 · 5.67 */
+  /* The one warm note in the palette. Reserved for "new / just arrived" — which is
+     NOT the same meaning as "interactive", so it should not have been teal. Having a
+     single warm accent used for a single purpose is most of what stops a palette
+     reading as auto-generated. */
+  --clay: #A9541F; --clay-rgb: 169,84,31; --clay-dim: rgba(169,84,31,0.10); --clay-fg: #A9541F; /* 5.28 · 4.81 */
+  --success: #1B8F5A; --success-rgb: 27,143,90; --success-dim: rgba(27,143,90,0.10); --success-fg: #0F6B41; /* 6.56 · 5.98 · 5.20 */
+  --warning: #B4770B; --warning-rgb: 180,119,11; --warning-dim: rgba(180,119,11,0.11); --warning-fg: #7E5304; /* 6.72 · 6.12 · 5.40 */
+  --danger: #D2453D; --danger-rgb: 210,69,61; --danger-dim: rgba(210,69,61,0.10); --danger-fg: #B32B26; /* 6.38 · 5.81 · 4.88 */
+  --text-primary: #10243B; --text-secondary: #47586E;
+  /* Was #64748B, which is 4.36:1 on this warmer, slightly darker ground and 3.71:1
+     through two tints — i.e. the ground change alone would have pushed the most-used
+     text colour in the product under AA. #5C6470 clears 4.5:1 in every case. */
+  --text-muted: #5C6470; /* 5.98 · 5.45 · 4.64 */
+  --sidebar-bg: #0E2440; --sidebar-bg-2: #0A1A2F;
   --sidebar-border: rgba(255,255,255,0.08); --sidebar-active: rgba(255,255,255,0.09);
-  --sidebar-text: #F1F5F9; --sidebar-text-hover: #CFE0EE; --sidebar-muted: #93A6BC; /* 13.50 · 5.93 on --ink */
-  --topbar-bg: rgba(245,242,237,0.78);
-
-  --shadow-sm: 0 1px 2px rgba(44,36,26,0.05); --shadow-md: 0 4px 16px rgba(44,36,26,0.07); --shadow-lg: 0 18px 48px rgba(44,36,26,0.11);
-  /* Seam = hairline + falloff. The hairline gives the edge something crisp to be; the
-     falloff gives the content column somewhere to recede to. Either alone looks wrong —
-     line only is flat, gradient only is unresolved. */
-  --seam: rgba(255,255,255,0.10); --seam-shadow: 10px 0 30px -22px rgba(44,36,26,0.55);
-  --seam-falloff: linear-gradient(90deg in oklab, rgba(44,36,26,0.055), rgba(44,36,26,0) 34px);
+  --sidebar-text: #F2F6FA; --sidebar-text-hover: #CFE3EE; --sidebar-muted: #93A6BC;
+  --topbar-bg: rgba(246,244,241,0.78);
+  /* Warm-cast shadows. Navy-black shadows on warm paper turn grey and dirty the
+     ground; these are mixed toward brown so the paper stays paper. */
+  --shadow-sm: 0 1px 2px rgba(46,38,28,0.05); --shadow-md: 0 4px 16px rgba(46,38,28,0.07); --shadow-lg: 0 18px 48px rgba(46,38,28,0.11);
+  /* The seam between the navy sidebar and the paper content column. A hairline alone
+     was invisible against navy, so this is a highlight on the sidebar's own inner
+     edge plus a short shadow spilling onto the paper — the sidebar reads as a panel
+     IN FRONT of the content rather than two colours meeting at nothing. */
+  --seam: rgba(255,255,255,0.10); --seam-shadow: 10px 0 30px -22px rgba(46,38,28,0.55);
+  /* Aurora blobs were 13–16% teal AND violet on a white hero — the single most
+     "AI landing page" element in the light theme. Kept only as a whisper, one cool
+     and one warm, so the hero has a hint of atmosphere and no light show. */
   --aurora-1: rgba(14,125,140,0.07); --aurora-2: rgba(14,125,140,0.045); --aurora-3: rgba(169,84,31,0.05);
 }
 [data-theme="dark"] {
@@ -92,10 +91,7 @@
      --surface); the seam is a hairline rather than a shadow, because on a near-black
      content column a cast shadow is invisible and a light edge is what reads. */
   --clay: #E08A4F; --clay-rgb: 224,138,79; --clay-dim: rgba(224,138,79,0.14); --clay-fg: #E8A26E;
-  --clay-on-ink: #E8A26E;
-  --ink: #1B1D27; --ink-2: #14151D; --ink-hover: #262A38;
   --seam: rgba(255,255,255,0.07); --seam-shadow: none;
-  --seam-falloff: linear-gradient(90deg in oklab, rgba(0,0,0,0.22), rgba(0,0,0,0) 30px);
 }
 .sidebar { --accent-fg: var(--accent-2); }
 
@@ -125,11 +121,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ── APP SHELL ── */
 .app { display: flex; height: 100vh; overflow: hidden; }
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; position: relative; }
-/* The other half of the seam. Sits above the content column's own background and below
-   its contents, so it darkens the paper next to the rail without tinting anything on it. */
-.main::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 34px; z-index: 5;
-  pointer-events: none; background: var(--seam-falloff); }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .content { flex: 1; min-height: 0; overflow-y: auto; }
 .page-scroll { height: 100%; overflow-y: auto; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 30px 26px 70px; animation: fade .32s cubic-bezier(.22,1,.36,1); }
@@ -138,7 +130,7 @@ a { color: inherit; text-decoration: none; }
 /* ── SIDEBAR ── */
 .sidebar {
   width: 244px; flex-shrink: 0; display: flex; flex-direction: column;
-  background: linear-gradient(180deg in oklab, var(--sidebar-bg), var(--sidebar-bg-2));
+  background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2));
   position: relative; overflow: visible;
   transition: transform .2s cubic-bezier(.22,1,.36,1);
   /* THE SEAM. Previously `border-right: 1px solid rgba(255,255,255,.07)` — a white
@@ -161,7 +153,7 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 6px 16px rgba(var(--accent-rgb),0.42); }
 .brand-mark svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linejoin: round; }
 .brand-name { font-size: 15.5px; font-weight: 600; color: var(--sidebar-text); }
-.brand-name b { background: linear-gradient(120deg in oklab, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.brand-name b { background: linear-gradient(120deg, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .brand-tenant { font-size: 11.5px; color: var(--sidebar-muted); margin-top: 3px; }
 .nav { flex: 1; padding: 6px 12px; overflow-y: auto; z-index: 1; }
 .nav-label { padding: 14px 10px 7px; font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--sidebar-muted); }
@@ -170,7 +162,7 @@ a { color: inherit; text-decoration: none; }
 .nav-item.active { background: var(--sidebar-active); color: var(--sidebar-text); box-shadow: inset 0 0 0 1px var(--sidebar-border); }
 .nav-item.active .ic { color: var(--accent-2); }
 .nav-item.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); width: 3px; height: 20px; border-radius: 3px;
-  background: linear-gradient(in oklab, var(--accent-2), var(--accent-3)); box-shadow: 0 0 12px 1px var(--accent-glow); }
+  background: linear-gradient(var(--accent-2), var(--accent-3)); box-shadow: 0 0 12px 1px var(--accent-glow); }
 .nav-item.inert { opacity: .45; cursor: default; }
 .nav-item.inert:hover { background: transparent; color: var(--sidebar-muted); }
 .nav-item .badge-count { margin-left: auto; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: rgba(var(--accent-rgb),.22); color: var(--accent-2); }
@@ -178,9 +170,7 @@ a { color: inherit; text-decoration: none; }
 .user-row { display: flex; align-items: center; gap: 10px; padding: 11px; }
 .avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 600; flex-shrink: 0; background: var(--accent); }
 .user-name { font-size: 12.5px; font-weight: 500; color: var(--sidebar-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* The warm note echoed into the cool rail — see --clay-on-ink. This is the only warm
-   thing inside the navy, which is exactly why it works. */
-.role-pill { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1.5px 7px; border-radius: 7px; background: rgba(var(--clay-rgb),.20); color: var(--clay-on-ink); }
+.role-pill { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1.5px 7px; border-radius: 7px; background: rgba(var(--accent-rgb),.18); color: var(--accent-2); }
 .signout { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 11px; font-size: 12px; color: var(--sidebar-muted); border: none; border-top: 1px solid var(--sidebar-border); background: transparent; transition: .15s; }
 .signout:hover { color: var(--danger-fg); background: rgba(240,68,56,.1); }
 
@@ -216,11 +206,8 @@ a { color: inherit; text-decoration: none; }
 /* Solid, not a gradient. A gradient-filled button is decoration standing in for
    hierarchy, and the deeper petrol carries a white label on its own (4.85:1). The
    hover shadow is neutral rather than an accent-coloured glow. */
-/* Ink, not teal. A primary button is structure, not a live state, and it now matches
-   the rail exactly — which is most of why this reads as one object. White label on
-   --ink is 14.79:1. To go back to teal CTAs, this one line is the only change. */
-.btn-primary { color: #fff; background: var(--ink); box-shadow: var(--shadow-sm); }
-.btn-primary:hover { transform: translateY(-1px); background: var(--ink-hover); box-shadow: var(--shadow-md); }
+.btn-primary { color: #fff; background: var(--accent); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { transform: translateY(-1px); background: var(--accent-hover); box-shadow: var(--shadow-md); }
 .btn-outline { background: var(--surface); border: 1px solid var(--border-2); color: var(--text-primary); }
 .btn-outline:hover { background: var(--surface-2); border-color: var(--text-muted); }
 .btn-ghost { background: transparent; color: var(--text-secondary); }
@@ -402,7 +389,7 @@ tbody tr:hover { background: var(--row-hover); }
    half has the same figure/ground the rest of the app has. */
 .auth-layout { display: flex; min-height: 100vh; background: var(--bg); }
 .brandpanel { position: relative; overflow: hidden; flex: 0 0 clamp(440px, 44vw, 620px); display: flex; flex-direction: column; justify-content: space-between; padding: 44px 48px;
-  background: radial-gradient(120% 120% in oklab at 15% 10%, var(--p-bg) 0%, var(--p-bg-2) 100%); color: var(--p-text); }
+  background: radial-gradient(120% 120% at 15% 10%, var(--p-bg) 0%, var(--p-bg-2) 100%); color: var(--p-text); }
 .aurora { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .aurora span { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .9; }
 .a1 { width: 460px; height: 460px; background: var(--p-a1); top: -140px; left: -120px; animation: drift1 16s ease-in-out infinite; }
@@ -435,11 +422,11 @@ tbody tr:hover { background: var(--row-hover); }
 .lockup .mark { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 8px 24px rgba(var(--accent-rgb),0.5); }
 .lockup .mark svg { width: 21px; height: 21px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linejoin: round; }
 .lockup .name { font-size: 18px; font-weight: 600; }
-.lockup .name b { background: linear-gradient(120deg in oklab, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.lockup .name b { background: linear-gradient(120deg, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .bp-mid { display: flex; flex-direction: column; gap: 30px; }
 .pitch .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--p-muted); margin-bottom: 16px; }
 .pitch h2 { font-size: clamp(30px, 3.3vw, 44px); font-weight: 650; line-height: 1.08; letter-spacing: -0.028em; color: var(--p-text); }
-.pitch h2 span { background: linear-gradient(110deg in oklab, var(--accent-2) 10%, var(--accent-3) 90%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.pitch h2 span { background: linear-gradient(110deg, var(--accent-2) 10%, var(--accent-3) 90%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .pitch p { margin-top: 16px; font-size: 14.5px; line-height: 1.62; color: var(--p-muted); max-width: 42ch; }
 .glassdeck { position: relative; height: 236px; margin-top: 4px; }
 .glass { position: absolute; border-radius: 16px; padding: 16px 18px;
@@ -476,7 +463,7 @@ tbody tr:hover { background: var(--row-hover); }
 .g-insight .sub { font-size: 10.5px; color: var(--p-muted); margin-top: 6px; }
 .pstats { display: flex; gap: 12px; }
 .pstat { flex: 1; padding: 13px 14px; border-radius: 13px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
-.pstat .v { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; background: linear-gradient(120deg in oklab, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.pstat .v { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; background: linear-gradient(120deg, var(--accent-2), var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .pstat .l { font-size: 10.5px; color: var(--p-muted); margin-top: 4px; line-height: 1.3; }
 .bp-bot { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--p-muted); }
 .bp-bot .trust { display: flex; align-items: center; gap: 7px; }
@@ -486,7 +473,7 @@ tbody tr:hover { background: var(--row-hover); }
 /* A very faint warm wash at the top-left, angled away from the brand panel. Enough that
    the paper is not a flat fill, far too weak to be a "gradient background". */
 .formside::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(70% 55% in oklab at 12% 0%, var(--aurora-3), transparent 70%); }
+  background: radial-gradient(70% 55% at 12% 0%, var(--aurora-3), transparent 70%); }
 .formside > * { position: relative; z-index: 1; }
 .form-top { display: flex; justify-content: flex-end; padding: 20px 24px; }
 .theme-btn { width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: grid; place-items: center; box-shadow: var(--shadow-sm); transition: .15s; }
@@ -527,8 +514,8 @@ tbody tr:hover { background: var(--row-hover); }
 .pw-meter { display: flex; gap: 5px; margin-top: 9px; }
 .pw-meter i { flex: 1; height: 4px; border-radius: 4px; background: var(--surface-3); transition: background .2s; }
 .pw-label { font-size: 11px; margin-top: 6px; color: var(--text-muted); }
-.submit { width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #fff; background: var(--ink); box-shadow: var(--shadow-sm); transition: transform .16s, box-shadow .18s, background .16s; }
-.submit:hover { transform: translateY(-1px); background: var(--ink-hover); box-shadow: var(--shadow-md); }
+.submit { width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #fff; background: var(--accent); box-shadow: var(--shadow-sm); transition: transform .16s, box-shadow .18s, background .16s; }
+.submit:hover { transform: translateY(-1px); background: var(--accent-hover); box-shadow: var(--shadow-md); }
 .submit svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .submit .sp { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
