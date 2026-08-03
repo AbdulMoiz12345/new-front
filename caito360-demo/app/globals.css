@@ -3,21 +3,72 @@
 /* ============================================================================
    CAITO360 redesign demo — evolves the existing token system.
    ============================================================================ */
+/* ── LIGHT THEME · "paper & petrol" ─────────────────────────────────────────────
+   The previous light theme read as generated rather than designed, for four reasons
+   that are all fixable in tokens:
+
+   1. The ground was blue-white (#FAFBFD) sitting under pure-white cards. A 1.5%
+      lightness step means no figure/ground at all — everything floats in a cold
+      white void, which is what "too plain" and "too white" describe. The ground is
+      now WARM paper (#F6F4F1, ~3.5% step under white), so a card is legibly a card
+      before any shadow is applied.
+   2. The accent was electric cyan (#0FB4C6). At 2.51:1 it could never be text, so
+      the UI leaned on gradients and glows to make it carry weight — which is the
+      cyan-to-violet signature of every AI template. It is now a deeper petrol teal
+      that is still the brand hue but can act as ink AND as a solid fill.
+   3. --accent-3 was violet #7C83FF. Teal + violet is the tell. Dropped: the palette
+      is now ONE cool hue (teal, on a navy ink) plus ONE warm note (clay), which is
+      a choice rather than a default.
+   4. Status colours were the stock Tailwind neons (#17B26A / #F59E0B / #EF4444).
+      Muted a step each so they read as a considered set on warm paper. Hue order is
+      preserved, so the severity ramp still means what it meant.
+
+   Cool ink on a warm ground is the deliberate tension holding this together — it is
+   why navy text on paper looks composed where navy on blue-white looks like a default.
+
+   CONTRAST: every value below was measured, including the case the production
+   globals.css calls out as the decider — a muted timestamp on a status chip that sits
+   on a card carrying the SAME 10% tint (two coats). Ratios in comments are
+   "on white · on paper · through two tints". Nothing here is under 4.5:1 as text. */
 :root, [data-theme="light"] {
-  --bg: #FAFBFD; --bg-2: #F3F6FA; --surface: #FFFFFF; --surface-2: #F4F7FA; --surface-3: #E7EEF4;
-  --border: #E8EEF4; --border-2: #D6E0EA; --row-hover: rgba(15,180,198,0.045);
-  --accent: #0FB4C6; --accent-hover: #0C99A9; --accent-2: #16C7D9; --accent-3: #7C83FF;
-  --accent-rgb: 15,180,198; --accent-dim: rgba(15,180,198,0.10); --accent-glow: rgba(15,180,198,0.22); --accent-fg: #08707D;
-  --success: #17B26A; --success-rgb: 23,178,106; --success-dim: rgba(23,178,106,0.10); --success-fg: #0B6E3F;
-  --warning: #F59E0B; --warning-rgb: 245,158,11; --warning-dim: rgba(245,158,11,0.11); --warning-fg: #8A5A00;
-  --danger: #EF4444; --danger-rgb: 239,68,68; --danger-dim: rgba(239,68,68,0.10); --danger-fg: #BC2626;
-  --text-primary: #0A2540; --text-secondary: #45566B; --text-muted: #64748B;
-  --sidebar-bg: #0A2444; --sidebar-bg-2: #061729;
-  --sidebar-border: rgba(255,255,255,0.07); --sidebar-active: rgba(255,255,255,0.09);
-  --sidebar-text: #F4F8FB; --sidebar-text-hover: #CFE3EE; --sidebar-muted: #8CA3BD;
-  --topbar-bg: rgba(250,251,253,0.75);
-  --shadow-sm: 0 1px 2px rgba(10,37,64,0.05); --shadow-md: 0 4px 16px rgba(10,37,64,0.07); --shadow-lg: 0 18px 48px rgba(10,37,64,0.10);
-  --aurora-1: rgba(15,180,198,0.16); --aurora-2: rgba(22,199,217,0.13); --aurora-3: rgba(124,131,255,0.13);
+  --bg: #F6F4F1; --bg-2: #EFEBE5; --surface: #FFFFFF; --surface-2: #F4F1EC; --surface-3: #E7E2DA;
+  /* Warm hairlines, and two steps lower in contrast than the old cool ones. The old
+     #E8EEF4 against #FFFFFF was a hard cold line at every card edge, table row and
+     divider — the "too sharp" complaint. Elevation now comes mostly from the paper/white
+     step plus --shadow-sm; the border is only there to close the shape. */
+  --border: #E6E1D9; --border-2: #D5CEC4; --row-hover: rgba(14,125,140,0.045);
+  --accent: #0E7D8C; --accent-hover: #0A6B78; --accent-2: #16C7D9; --accent-3: #4FD1DE;
+  --accent-rgb: 14,125,140; --accent-dim: rgba(14,125,140,0.10); --accent-glow: rgba(14,125,140,0.18);
+  --accent-fg: #0A5F6B;                /* 7.34 · 6.68 · 5.67 */
+  /* The one warm note in the palette. Reserved for "new / just arrived" — which is
+     NOT the same meaning as "interactive", so it should not have been teal. Having a
+     single warm accent used for a single purpose is most of what stops a palette
+     reading as auto-generated. */
+  --clay: #A9541F; --clay-rgb: 169,84,31; --clay-dim: rgba(169,84,31,0.10); --clay-fg: #A9541F; /* 5.28 · 4.81 */
+  --success: #1B8F5A; --success-rgb: 27,143,90; --success-dim: rgba(27,143,90,0.10); --success-fg: #0F6B41; /* 6.56 · 5.98 · 5.20 */
+  --warning: #B4770B; --warning-rgb: 180,119,11; --warning-dim: rgba(180,119,11,0.11); --warning-fg: #7E5304; /* 6.72 · 6.12 · 5.40 */
+  --danger: #D2453D; --danger-rgb: 210,69,61; --danger-dim: rgba(210,69,61,0.10); --danger-fg: #B32B26; /* 6.38 · 5.81 · 4.88 */
+  --text-primary: #10243B; --text-secondary: #47586E;
+  /* Was #64748B, which is 4.36:1 on this warmer, slightly darker ground and 3.71:1
+     through two tints — i.e. the ground change alone would have pushed the most-used
+     text colour in the product under AA. #5C6470 clears 4.5:1 in every case. */
+  --text-muted: #5C6470; /* 5.98 · 5.45 · 4.64 */
+  --sidebar-bg: #0E2440; --sidebar-bg-2: #0A1A2F;
+  --sidebar-border: rgba(255,255,255,0.08); --sidebar-active: rgba(255,255,255,0.09);
+  --sidebar-text: #F2F6FA; --sidebar-text-hover: #CFE3EE; --sidebar-muted: #93A6BC;
+  --topbar-bg: rgba(246,244,241,0.78);
+  /* Warm-cast shadows. Navy-black shadows on warm paper turn grey and dirty the
+     ground; these are mixed toward brown so the paper stays paper. */
+  --shadow-sm: 0 1px 2px rgba(46,38,28,0.05); --shadow-md: 0 4px 16px rgba(46,38,28,0.07); --shadow-lg: 0 18px 48px rgba(46,38,28,0.11);
+  /* The seam between the navy sidebar and the paper content column. A hairline alone
+     was invisible against navy, so this is a highlight on the sidebar's own inner
+     edge plus a short shadow spilling onto the paper — the sidebar reads as a panel
+     IN FRONT of the content rather than two colours meeting at nothing. */
+  --seam: rgba(255,255,255,0.10); --seam-shadow: 10px 0 30px -22px rgba(46,38,28,0.55);
+  /* Aurora blobs were 13–16% teal AND violet on a white hero — the single most
+     "AI landing page" element in the light theme. Kept only as a whisper, one cool
+     and one warm, so the hero has a hint of atmosphere and no light show. */
+  --aurora-1: rgba(14,125,140,0.07); --aurora-2: rgba(14,125,140,0.045); --aurora-3: rgba(169,84,31,0.05);
 }
 [data-theme="dark"] {
   --bg: #0A0B10; --bg-2: #0E0F16; --surface: #14151D; --surface-2: #1B1D27; --surface-3: #262A38;
@@ -34,6 +85,13 @@
   --topbar-bg: rgba(10,11,16,0.72);
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.35); --shadow-md: 0 4px 16px rgba(0,0,0,0.45); --shadow-lg: 0 20px 50px rgba(0,0,0,0.55);
   --aurora-1: rgba(124,131,255,0.20); --aurora-2: rgba(167,139,250,0.16); --aurora-3: rgba(34,211,238,0.12);
+  /* ADDITIONS ONLY — every dark value above is untouched. The two new tokens the light
+     theme introduces still have to resolve here or the components that use them would
+     fall back to nothing in dark mode. Clay is lifted for a dark ground (7.42:1 on
+     --surface); the seam is a hairline rather than a shadow, because on a near-black
+     content column a cast shadow is invisible and a light edge is what reads. */
+  --clay: #E08A4F; --clay-rgb: 224,138,79; --clay-dim: rgba(224,138,79,0.14); --clay-fg: #E8A26E;
+  --seam: rgba(255,255,255,0.07); --seam-shadow: none;
 }
 .sidebar { --accent-fg: var(--accent-2); }
 
@@ -73,9 +131,21 @@ a { color: inherit; text-decoration: none; }
 .sidebar {
   width: 244px; flex-shrink: 0; display: flex; flex-direction: column;
   background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-bg-2));
-  border-right: 1px solid var(--sidebar-border); position: relative; overflow: hidden;
+  position: relative; overflow: visible;
   transition: transform .2s cubic-bezier(.22,1,.36,1);
+  /* THE SEAM. Previously `border-right: 1px solid rgba(255,255,255,.07)` — a white
+     hairline drawn on the INSIDE of a navy panel, invisible from a metre away, which is
+     why the sidebar and the content column appeared to just abut. Two layers instead:
+     an inset highlight on the panel's own edge (so the panel has a lit rim), and a
+     short shadow thrown onto the content column (so the content sits behind it).
+     `overflow: visible` is required for the outer shadow to escape; the aurora blob
+     inside is clipped separately below. */
+  box-shadow: inset -1px 0 0 var(--seam), var(--seam-shadow);
+  z-index: 1;
 }
+/* The ::after aurora used to be clipped by the sidebar's own `overflow: hidden`, which
+   the seam shadow now needs turned off. Clip it to itself instead. */
+.sidebar::after { clip-path: inset(0); }
 .sidebar::after { content: ''; position: absolute; left: -40%; bottom: -20%; width: 180%; height: 300px; pointer-events: none;
   background: radial-gradient(60% 60% at 40% 100%, var(--aurora-1), transparent 70%); }
 .brand { display: flex; align-items: center; gap: 11px; padding: 18px 18px 16px; }
@@ -98,7 +168,7 @@ a { color: inherit; text-decoration: none; }
 .nav-item .badge-count { margin-left: auto; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 8px; background: rgba(var(--accent-rgb),.22); color: var(--accent-2); }
 .user-card { margin: 6px 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.05); box-shadow: inset 0 0 0 1px var(--sidebar-border); overflow: hidden; z-index: 1; }
 .user-row { display: flex; align-items: center; gap: 10px; padding: 11px; }
-.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 600; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: 0 2px 8px rgba(var(--accent-rgb),.4); }
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 12px; font-weight: 600; flex-shrink: 0; background: var(--accent); }
 .user-name { font-size: 12.5px; font-weight: 500; color: var(--sidebar-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .role-pill { display: inline-block; margin-top: 3px; font-size: 10px; font-weight: 600; padding: 1.5px 7px; border-radius: 7px; background: rgba(var(--accent-rgb),.18); color: var(--accent-2); }
 .signout { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 11px; font-size: 12px; color: var(--sidebar-muted); border: none; border-top: 1px solid var(--sidebar-border); background: transparent; transition: .15s; }
@@ -111,16 +181,20 @@ a { color: inherit; text-decoration: none; }
 .topbar-right { display: flex; align-items: center; gap: 10px; }
 .usage-pill { display: flex; align-items: center; gap: 11px; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-2); }
 .usage-bar { width: 66px; height: 5px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
-.usage-bar i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.usage-bar i { display: block; height: 100%; border-radius: 5px; background: var(--accent); }
 .usage-txt { font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
 .usage-txt b { color: var(--text-primary); }
-.plan-chip { font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--accent-dim); color: var(--accent-fg); }
+/* Clay, not teal: a plan tier is not an interactive affordance. */
+.plan-chip { font-size: 10.5px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--clay-dim); color: var(--clay-fg); }
 .icon-btn { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; color: var(--text-muted); background: transparent; border: none; position: relative; transition: .15s; }
 .icon-btn:hover { background: var(--surface-2); color: var(--text-secondary); }
 .icon-btn .dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); border: 2px solid var(--surface); }
 
 /* ── PRIMITIVES ── */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+/* Elevation-first. The border used to do all the work with a hard cold line; now the
+   paper/white step plus a 1px warm shadow separate the card, and the hairline just
+   closes the shape. This is the main fix for "borders are too sharp". */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-sm); }
 .card-hover { transition: border-color .18s, box-shadow .18s, transform .18s; }
 .card-hover:hover { border-color: var(--border-2); box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .eyebrow { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
@@ -128,9 +202,12 @@ a { color: inherit; text-decoration: none; }
 .section-head h2 { font-size: 14px; font-weight: 600; }
 .viewall { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: var(--accent-fg); transition: gap .18s; }
 .viewall:hover { gap: 8px; }
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 500; padding: 9px 15px; border-radius: 11px; border: none; transition: .16s; white-space: nowrap; }
-.btn-primary { color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); box-shadow: var(--shadow-sm); }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(var(--accent-rgb),.32); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; font-weight: 500; padding: 9px 15px; border-radius: 12px; border: none; transition: .16s; white-space: nowrap; }
+/* Solid, not a gradient. A gradient-filled button is decoration standing in for
+   hierarchy, and the deeper petrol carries a white label on its own (4.85:1). The
+   hover shadow is neutral rather than an accent-coloured glow. */
+.btn-primary { color: #fff; background: var(--accent); box-shadow: var(--shadow-sm); }
+.btn-primary:hover { transform: translateY(-1px); background: var(--accent-hover); box-shadow: var(--shadow-md); }
 .btn-outline { background: var(--surface); border: 1px solid var(--border-2); color: var(--text-primary); }
 .btn-outline:hover { background: var(--surface-2); border-color: var(--text-muted); }
 .btn-ghost { background: transparent; color: var(--text-secondary); }
@@ -159,7 +236,7 @@ a { color: inherit; text-decoration: none; }
 .stat .val { font-size: 30px; font-weight: 600; letter-spacing: -0.03em; margin-top: 10px; line-height: 1; }
 .stat .val small { font-size: 15px; font-weight: 500; color: var(--text-muted); letter-spacing: 0; }
 .stat .meter { margin-top: 13px; height: 5px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
-.stat .meter i { display: block; height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.stat .meter i { display: block; height: 100%; border-radius: 5px; background: var(--accent); }
 .stat .sub { margin-top: 9px; font-size: 11.5px; color: var(--text-muted); }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 26px; }
 .activity { padding: 18px; }
@@ -207,7 +284,7 @@ a.doc-mini:hover, a.ins-mini:hover { background: var(--row-hover); }
 .msg { display: flex; gap: 12px; margin-bottom: 22px; max-width: 780px; }
 .msg .who { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; font-size: 11px; font-weight: 600; }
 .msg.user .who { background: var(--surface-3); color: var(--text-secondary); }
-.msg.ai .who { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+.msg.ai .who { background: var(--accent); color: #fff; }
 .bubble { font-size: 14px; line-height: 1.62; color: var(--text-primary); }
 .msg.user .bubble { color: var(--text-secondary); }
 .bubble p { margin-bottom: 10px; }
@@ -223,10 +300,10 @@ a.doc-mini:hover, a.ins-mini:hover { background: var(--row-hover); }
 .composer-box { display: flex; align-items: flex-end; gap: 10px; padding: 12px 14px; border-radius: 15px; background: var(--surface); border: 1px solid var(--border-2); }
 .composer-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3.5px var(--accent-glow); }
 .composer-box textarea { flex: 1; border: none; outline: none; resize: none; background: transparent; color: var(--text-primary); font-size: 14px; line-height: 1.5; max-height: 120px; }
-.send { width: 36px; height: 36px; border-radius: 11px; border: none; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); }
+.send { width: 36px; height: 36px; border-radius: 12px; border: none; display: grid; place-items: center; color: #fff; background: var(--accent); }
 .send svg { stroke: #fff; }
 .starters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-.starter { font-size: 12.5px; padding: 8px 13px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); transition: .15s; }
+.starter { font-size: 12.5px; padding: 8px 13px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); transition: .15s; }
 .starter:hover { border-color: var(--accent); color: var(--text-primary); }
 
 /* ── DOCUMENTS ── */
@@ -236,7 +313,7 @@ a.doc-mini:hover, a.ins-mini:hover { background: var(--row-hover); }
 .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
 .search { position: relative; flex: 1; min-width: 220px; }
 .search .ic { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-.search input { width: 100%; padding: 10px 13px 10px 38px; border-radius: 11px; border: 1px solid var(--border-2); background: var(--surface); color: var(--text-primary); font-size: 13.5px; }
+.search input { width: 100%; padding: 10px 13px 10px 38px; border-radius: 12px; border: 1px solid var(--border-2); background: var(--surface); color: var(--text-primary); font-size: 13.5px; }
 .search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3.5px var(--accent-glow); }
 table { width: 100%; border-collapse: collapse; }
 .tbl-card { overflow: hidden; }
@@ -260,11 +337,11 @@ tbody tr:hover { background: var(--row-hover); }
 
 /* ── INSIGHTS ── */
 .sev-strip { display: flex; gap: 9px; flex-wrap: wrap; margin-bottom: 20px; }
-.sev-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 11px; font-size: 12.5px; border: 1px solid var(--border-2); color: var(--text-secondary); background: var(--surface); transition: .15s; }
+.sev-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 13px; border-radius: 12px; font-size: 12.5px; border: 1px solid var(--border-2); color: var(--text-secondary); background: var(--surface); transition: .15s; }
 .sev-btn:hover { border-color: var(--accent); color: var(--text-primary); }
 .sev-btn.on { border-color: var(--accent); background: var(--accent-dim); color: var(--text-primary); }
 .sev-btn .cnt { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); }
-.new-note { font-size: 12px; padding: 8px 12px; border-radius: 10px; background: var(--accent-dim); color: var(--accent-fg); font-weight: 500; }
+.new-note { font-size: 12px; padding: 8px 12px; border-radius: 12px; background: var(--clay-dim); color: var(--clay-fg); font-weight: 500; }
 .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 22px; overflow-x: auto; }
 .tab { padding: 10px 14px; font-size: 12.5px; font-weight: 500; color: var(--text-muted); border: none; border-bottom: 2px solid transparent; text-transform: capitalize; white-space: nowrap; transition: .15s; margin-bottom: -1px; background: transparent; }
 .tab:hover { color: var(--text-primary); }
@@ -280,7 +357,7 @@ tbody tr:hover { background: var(--row-hover); }
 .ins-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .sev-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 8px; background: var(--sev-tint); color: var(--sev-color); }
 .cat-chip { font-size: 11px; padding: 3px 9px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; letter-spacing: .04em; background: var(--surface-2); color: var(--text-secondary); }
-.new-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 8px; background: var(--accent-dim); color: var(--accent-fg); }
+.new-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 8px; background: var(--clay-dim); color: var(--clay-fg); }
 .ins-age { font-size: 11.5px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
 .ins-body { padding: 15px 18px; }
 .ins-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 7px; }
@@ -304,9 +381,13 @@ tbody tr:hover { background: var(--row-hover); }
 .pending-tag { background: var(--warning-dim); color: var(--warning-fg); }
 
 /* ── AUTH FRONT PAGE ── */
-.brandpanel { --p-bg: #0A2444; --p-bg-2: #061224; --p-a1: rgba(15,180,198,0.55); --p-a2: rgba(22,199,217,0.42); --p-a3: rgba(124,131,255,0.48); --p-text: #EAF2F8; --p-muted: #93A9C4; --p-line: rgba(255,255,255,0.09); }
+.brandpanel { --p-bg: #0E2440; --p-bg-2: #0A1A2F; --p-a1: rgba(15,180,198,0.55); --p-a2: rgba(22,199,217,0.42); --p-a3: rgba(124,131,255,0.48); --p-text: #EAF2F8; --p-muted: #93A9C4; --p-line: rgba(255,255,255,0.09); }
 [data-theme="dark"] .brandpanel { --p-bg: #0B0C15; --p-bg-2: #07080F; --p-a1: rgba(124,131,255,0.55); --p-a2: rgba(167,139,250,0.42); --p-a3: rgba(34,211,238,0.40); }
-.auth-layout { display: flex; min-height: 100vh; background: var(--surface); }
+/* Was `background: var(--surface)` — pure white, edge to edge, with the form floating
+   naked on it. Against a dark navy brand panel that reads as an unfinished half of the
+   screen. The ground is now paper and the form is an actual card on it, so the right
+   half has the same figure/ground the rest of the app has. */
+.auth-layout { display: flex; min-height: 100vh; background: var(--bg); }
 .brandpanel { position: relative; overflow: hidden; flex: 0 0 clamp(440px, 44vw, 620px); display: flex; flex-direction: column; justify-content: space-between; padding: 44px 48px;
   background: radial-gradient(120% 120% at 15% 10%, var(--p-bg) 0%, var(--p-bg-2) 100%); color: var(--p-text); }
 .aurora { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
@@ -388,13 +469,22 @@ tbody tr:hover { background: var(--row-hover); }
 .bp-bot .trust { display: flex; align-items: center; gap: 7px; }
 .bp-bot .trust svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 
-.formside { flex: 1; display: flex; flex-direction: column; position: relative; }
+.formside { flex: 1; display: flex; flex-direction: column; position: relative; background: var(--bg); overflow: hidden; }
+/* A very faint warm wash at the top-left, angled away from the brand panel. Enough that
+   the paper is not a flat fill, far too weak to be a "gradient background". */
+.formside::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(70% 55% at 12% 0%, var(--aurora-3), transparent 70%); }
+.formside > * { position: relative; z-index: 1; }
 .form-top { display: flex; justify-content: flex-end; padding: 20px 24px; }
-.theme-btn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: grid; place-items: center; transition: .15s; }
+.theme-btn { width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: grid; place-items: center; box-shadow: var(--shadow-sm); transition: .15s; }
 .theme-btn:hover { color: var(--text-secondary); border-color: var(--border-2); }
 .theme-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .form-scroll { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 24px 48px; }
-.formcard { width: 100%; max-width: 384px; animation: fade .32s cubic-bezier(.22,1,.36,1); }
+/* The form is now a card: white on paper, warm hairline, soft shadow, 20px corners.
+   Nothing about the fields changed — they just have something to sit in. */
+.formcard { width: 100%; max-width: 404px; padding: 32px 32px 28px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 20px; box-shadow: var(--shadow-md);
+  animation: fade .32s cubic-bezier(.22,1,.36,1); }
 .mobile-lockup { display: none; align-items: center; gap: 10px; margin-bottom: 30px; }
 .mobile-lockup .mark { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
 .mobile-lockup .mark svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linejoin: round; }
@@ -402,7 +492,7 @@ tbody tr:hover { background: var(--row-hover); }
 .mobile-lockup .name b { color: var(--accent-fg); }
 .head { margin-bottom: 28px; }
 .head .kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-fg); margin-bottom: 14px; }
-.head .kicker::before { content: ''; width: 22px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.head .kicker::before { content: ''; width: 22px; height: 2px; border-radius: 2px; background: var(--accent); }
 .head h1 { font-size: 27px; font-weight: 650; letter-spacing: -0.025em; }
 .head p { font-size: 13.5px; color: var(--text-muted); margin-top: 7px; }
 .field { margin-bottom: 16px; }
@@ -410,18 +500,22 @@ tbody tr:hover { background: var(--row-hover); }
 .field .frow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
 .field .frow a { font-size: 12px; color: var(--accent-fg); text-decoration: underline; text-underline-offset: 2px; }
 .inp-wrap { position: relative; }
-.inp { width: 100%; padding: 11px 14px; border-radius: 11px; font-size: 14px; background: var(--surface); border: 1px solid var(--border-2); color: var(--text-primary); box-shadow: var(--shadow-sm); transition: border-color .16s, box-shadow .16s; }
+/* Field fill is now the warm off-white, not --surface. Inside a white card a white
+   field is invisible except for its border, which is exactly the kind of thing that
+   made the old right-hand side read as blank. It goes white on focus, so focus is a
+   lift rather than only a ring. */
+.inp { width: 100%; padding: 11px 14px; border-radius: 12px; font-size: 14px; background: var(--surface-2); border: 1px solid var(--border-2); color: var(--text-primary); transition: border-color .16s, box-shadow .16s, background .16s; }
 .inp::placeholder { color: var(--text-muted); }
-.inp:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3.5px var(--accent-glow); }
+.inp:focus { outline: none; background: var(--surface); border-color: var(--accent); box-shadow: 0 0 0 3.5px var(--accent-glow); }
 .inp.pw { padding-right: 42px; }
 .eye { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 8px; border: none; background: transparent; color: var(--text-muted); display: grid; place-items: center; transition: .15s; }
-.eye:hover { color: var(--text-primary); background: var(--surface-2); }
+.eye:hover { color: var(--text-primary); background: var(--surface-3); }
 .eye svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .pw-meter { display: flex; gap: 5px; margin-top: 9px; }
 .pw-meter i { flex: 1; height: 4px; border-radius: 4px; background: var(--surface-3); transition: background .2s; }
 .pw-label { font-size: 11px; margin-top: 6px; color: var(--text-muted); }
-.submit { width: 100%; margin-top: 8px; padding: 12px; border-radius: 11px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-hover)); box-shadow: var(--shadow-sm); transition: transform .16s, box-shadow .18s; }
-.submit:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(var(--accent-rgb),0.34); }
+.submit { width: 100%; margin-top: 8px; padding: 12px; border-radius: 12px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 500; color: #fff; background: var(--accent); box-shadow: var(--shadow-sm); transition: transform .16s, box-shadow .18s, background .16s; }
+.submit:hover { transform: translateY(-1px); background: var(--accent-hover); box-shadow: var(--shadow-md); }
 .submit svg { width: 16px; height: 16px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .submit .sp { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
